@@ -1,14 +1,21 @@
 function Button(props){
     return(
         <button
-         style={{
-            backgroundColor:props.color,
-            color:"white",
-            padding:" 10px 20px",
-            borderRadius:"8px",
-            border:"none",
-            cursor:"pointer"
-         }}>
+         className="w-full
+bg-violet-600
+text-white
+py-3
+rounded-lg
+font-semibold
+hover:bg-violet-700
+transition
+duration-200
+cursor-pointer
+focus:outline-none
+focus:ring-2
+focus:ring-violet-400
+active:scale-95
+select-none">
             {props.text}
         </button>
     );
