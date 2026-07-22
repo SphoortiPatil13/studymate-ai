@@ -15,7 +15,8 @@ focus:outline-none
 focus:ring-2
 focus:ring-violet-400
 active:scale-95
-select-none">
+select-none" 
+onClick={props.onClick}>
             {props.text}
         </button>
     );
