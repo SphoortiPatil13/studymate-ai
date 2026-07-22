@@ -4,10 +4,26 @@ import {useState} from"react";
 function Login() {
   const [email, setEmail]= useState("");
   const [password, setPassword]= useState("");
+  const [errorMessage, seterrorMessage]= useState("");
   console.log({email, password});
-  function handleLogin(){
-    console.log({email,password});
+  function handleLogin() {
+  if (email.trim() === "") {
+    seterrorMessage("Email is required");
+    console.log("Email is required");
+    return;
   }
+
+  if (password.trim() === "") {
+    seterrorMessage("Password is required");
+    console.log("Password is required");
+    return;
+  }
+
+  seterrorMessage("");
+
+  console.log("Login Successful");
+  console.log({ email, password });
+}
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center">
       <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md">
