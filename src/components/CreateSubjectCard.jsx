@@ -1,6 +1,11 @@
-function CreateSubjectCard({title}) {
+
+
+function CreateSubjectCard({title , onClick}) {
+ 
   return (
-    <button className="w-56
+    <button 
+    onClick={onClick}
+    className="w-56
 h-40
 bg-white
 border-5
@@ -21,7 +26,9 @@ cursor-pointer
 active:scale-95">
   <div className="text-6xl font-light">+</div>
      <p className="font-semibold text-2xl">{title}</p> 
-    </button>
+   
+    
+       </button>
   )
 }
 
