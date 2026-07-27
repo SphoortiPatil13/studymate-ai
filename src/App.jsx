@@ -1,14 +1,19 @@
-//import Login from "./pages/Login";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-//function App() {
-  //return <Login />;
-//}
-
-//export default App;
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import SubjectPage from "./pages/SubjectPage";
 
 function App() {
-  return <Dashboard />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/subject/:id" element={<SubjectPage />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;

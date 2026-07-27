@@ -1,4 +1,7 @@
+import {useNavigate} from "react-router-dom";
+
 function SubjectCard({title , notes}) {
+  const navigate = useNavigate();
   return (
     <button className="w-56
 h-40
@@ -18,7 +21,7 @@ hover:shadow-lg
 transition
 active:scale-95
 duration-200
-cursor-pointer">
+cursor-pointer" onClick={() => navigate(`/subject/${title}`)}>
   <div className="text-2xl p-2 font-semibold">{title}</div>
      <p className="font-light font-slate-500 text-md"> 📝 Notes:{notes}</p> 
     </button>

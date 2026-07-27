@@ -1,10 +1,12 @@
 import Input from "../components/Input";
 import Button from "../components/Button";
 import {useState} from"react";
+import { useNavigate } from "react-router-dom";
 function Login() {
   const [email, setEmail]= useState("");
   const [password, setPassword]= useState("");
   const [errorMessage, seterrorMessage]= useState("");
+  const navigate = useNavigate();
   console.log({email, password});
   function handleLogin() {
   if (email.trim() === "") {
@@ -23,6 +25,7 @@ function Login() {
 
   console.log("Login Successful");
   console.log({ email, password });
+  navigate("/dashboard");
 }
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center">

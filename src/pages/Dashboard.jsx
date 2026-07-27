@@ -11,8 +11,12 @@ function Dashboard(){
   { title: "Computer Networks", notes: 15 }]);
     const [showModal, setShowModal]= useState(false);
     function handleCreateSubject(subjectName){
-        console.log(subjectName);
-    }
+        const newSubject = {title: subjectName, 
+                            notes: 0};
+        setsubjects([...subjects, newSubject]);
+        setShowModal(false);
+        }
+    
     return(
         <>
         <Navbar title="Dashboard"/>
