@@ -1,7 +1,7 @@
-function Button(props){
+function Button({text , onClick , className=""}){
     return(
         <button
-         className="w-full
+         className={`
 bg-violet-600
 text-white
 py-3
@@ -15,9 +15,9 @@ focus:outline-none
 focus:ring-2
 focus:ring-violet-400
 active:scale-95
-select-none" 
-onClick={props.onClick}>
-            {props.text}
+select-none ${className}` }
+onClick={onClick}>
+            {text}
         </button>
     );
 }

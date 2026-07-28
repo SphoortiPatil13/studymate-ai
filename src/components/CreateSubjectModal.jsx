@@ -17,8 +17,8 @@ function CreateSubjectModal({ onClose, onCreate }) {
       value={subjectName}
       onChange={(e) => setsubjectName(e.target.value)}/>
                 <div className="flex gap-4">
-                    <Button text="Cancel" onClick={onClose} />
-                    <Button text="Create subject" onClick={() => { if (subjectName.trim() !== ""){
+                    <Button text="Cancel" className="flex-1" onClick={onClose} />
+                    <Button text="Create subject" className="flex-1" onClick={() => { if (subjectName.trim() !== ""){
                                                                 onCreate(subjectName)} }} />
                 </div>
             </div>

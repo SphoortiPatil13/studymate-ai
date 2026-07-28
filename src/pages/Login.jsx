@@ -43,7 +43,7 @@ function Login() {
         Forgot Password?
       </a>
       </div>
-      <Button text="Login" onClick={handleLogin}/>
+      <Button text="Login" onClick={handleLogin} className="w-full"/>
       <div className="flex items-center my-6">
       <hr className="flex-grow border-slate-300" />
       <span className="mx-4 text-sm text-slate-500">

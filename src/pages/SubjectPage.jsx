@@ -2,28 +2,28 @@ import { useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import UploadNotesCard from "../components/UploadNotesCard";
 import NoteCard from "../components/NoteCard";
-import { useRef } from "react";
+import { useRef , useState } from "react";
+import AIPanel from "../components/AIPanel";
 function SubjectPage() {
     const { id } = useParams();
     const fileInputRef = useRef(null);
-    const notes = [
-  {
-    fileName: "Introduction to AI.pdf",
-    fileType: "PDF",
-    uploadedOn: "Today",
-  },
-  {
-    fileName: "Unit2.pptx",
-    fileType: "PPT",
-    uploadedOn: "Yesterday",
-  },
-];
+    const [notes , setNotes] = useState([]);
+    function handleFileUpload(e){
+        const file = e.target.files[0];
+        console.log(file);
+        const newNote= {
+            fileName: file.name,
+            fileType: file.type,
+            uploadedOn: "Today"
+        };
+        setNotes([...notes, newNote]);
+    }
     return (
         <div className="flex min-h-screen">
             <Sidebar />
             
-                <main className="flex-1">
-                    <input type="file" ref={fileInputRef} hidden />
+                <main className="flex-1 p-8">
+                    <input type="file" ref={fileInputRef} hidden onChange={handleFileUpload} />
                     <h1 className="text-3xl font-bold mb-6">
                         {id}
                     </h1>
@@ -46,9 +46,7 @@ function SubjectPage() {
                     />
                     ))}
                 </main>
-            <aside className="w-96">
-                AI Panel
-            </aside>
+            <AIPanel />
             
         </div>
     );
