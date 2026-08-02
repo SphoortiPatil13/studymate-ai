@@ -2,12 +2,17 @@ import { useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import UploadNotesCard from "../components/UploadNotesCard";
 import NoteCard from "../components/NoteCard";
-import { useRef , useState } from "react";
+import { useRef , useContext } from "react";
+import {SubjectsContext} from "../context/SubjectsContext";
 import AIPanel from "../components/AIPanel";
 function SubjectPage() {
     const { id } = useParams();
     const fileInputRef = useRef(null);
-    const [notes , setNotes] = useState([]);
+    const { subjects, setSubjects } = useContext(SubjectsContext);
+    const subject = subjects.find((subject) => subject.id === Number(id)) 
+    if (!subject) {
+    return <h1>Subject not found</h1>;
+};
     function handleFileUpload(e){
         const file = e.target.files[0];
         console.log(file);
@@ -25,7 +30,7 @@ function SubjectPage() {
                 <main className="flex-1 p-8">
                     <input type="file" ref={fileInputRef} hidden onChange={handleFileUpload} />
                     <h1 className="text-3xl font-bold mb-6">
-                        {id}
+                        {subject.title}
                     </h1>
 
                     <UploadNotesCard
@@ -37,7 +42,7 @@ function SubjectPage() {
                     <h2 className="mt-8 mb-4 font-semibold text-xl">
                     Uploaded Notes
                     </h2>
-                    {notes.map((note) => (
+                    {subject.notes.map((note) => (
                     <NoteCard
                     key={note.fileName}
                     fileName={note.fileName}

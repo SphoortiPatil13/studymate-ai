@@ -1,22 +1,21 @@
-import { useState } from "react";
+import { useState , useContext } from "react";
 import Navbar from "../components/Navbar";
 import CreateSubjectCard from "../components/CreateSubjectCard";
 import SubjectCard from "../components/SubjectCard";
 import Sidebar from "../components/Sidebar";
+import { SubjectsContext } from "../context/SubjectsContext";
 import CreateSubjectModal from "../components/CreateSubjectModal";
 function Dashboard(){
-    const [subjects, setsubjects] = useState([
-  { title: "Artificial Intelligence", notes: 12 },
-  { title: "DBMS", notes: 8 },
-  { title: "Computer Networks", notes: 15 }]);
+    const { subjects, setSubjects } = useContext(SubjectsContext);
     const [showModal, setShowModal]= useState(false);
     function handleCreateSubject(subjectName){
-        const newSubject = {title: subjectName, 
-                            notes: 0};
-        setsubjects([...subjects, newSubject]);
+        const newSubject = { id: Date.now(),
+                            title: subjectName, 
+                            notes: []};
+        setSubjects((prevSubjects) => [...prevSubjects, newSubject]);
         setShowModal(false);
         }
-    
+    console.log(subjects);
     return(
         <>
         <Navbar title="Dashboard"/>
@@ -30,7 +29,7 @@ function Dashboard(){
             <div className="flex flex-wrap gap-6">
             <CreateSubjectCard title="Add Subject" onClick={() => setShowModal(true)} />
             {subjects.map((subject) => (
-                <SubjectCard key={subject.title} title={subject.title} notes={subject.notes} />
+                <SubjectCard key={subject.id} id={subject.id} title={subject.title} notes={subject.notes.length} />
             ))}
            
             </div>
