@@ -2,7 +2,8 @@ import Button from "./Button";
 import Input from "./Input";
 import { useState , useRef , useEffect } from "react";
 
-function AIPanel() {
+function AIPanel({subject}) {
+    console.log(subject);
     const [messages, setMessages]= useState([{
     id: 1,
     sender: "ai",
@@ -50,7 +51,14 @@ function AIPanel() {
       <h2 className="text-2xl font-bold p-6 border-b">
         🤖 AI Study Assistant
       </h2>
-
+      <div className="px-6 py-3 border-b text-sm text-slate-600">
+      <p>
+        <strong>Subject:</strong> {subject.title}
+      </p>
+      <p>
+        <strong>Notes:</strong> {subject.notes.length}
+      </p>
+      </div>
       <div className="flex-1 p-4 overflow-y-auto">
         {messages.map((message) => (
             <div key={message.id} className={`flex mb-4 ${

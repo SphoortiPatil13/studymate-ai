@@ -1,4 +1,4 @@
-function UploadNotesCard({title , subtitle , onClick}) {
+function UploadNotesCard({title , subtitle , onClick} ) {
     return (
             <button className="bg-white 
             w-72

@@ -15,14 +15,39 @@ function SubjectPage() {
 };
     function handleFileUpload(e){
         const file = e.target.files[0];
+        if (!file) return;
+        const newNote = {
+        id: Date.now(),
+        fileName: file.name,
+        fileType: file.type,
+        uploadedOn: "Today",};
         console.log(file);
-        const newNote= {
-            fileName: file.name,
-            fileType: file.type,
-            uploadedOn: "Today"
-        };
-        setNotes([...notes, newNote]);
+        setSubjects(
+        subjects.map((subject) => {
+        if (subject.id === Number(id)) {
+            return {
+                ...subject,
+                notes: [...subject.notes, newNote]
+            };
+        }
+
+        return subject;
+    })
+);
     }
+    function handleDeleteNote(noteId) {
+                        setSubjects(
+                            (prevSubjects) => prevSubjects.map((s) => {
+                                if (s.id === Number(id)) {
+                                    return {
+                                        ...s,
+                                        notes: s.notes.filter((n) => n.id !== noteId)
+                                    };
+                                }
+                                return s;
+                            })
+                        );
+                    }
     return (
         <div className="flex min-h-screen">
             <Sidebar />
@@ -44,14 +69,15 @@ function SubjectPage() {
                     </h2>
                     {subject.notes.map((note) => (
                     <NoteCard
-                    key={note.fileName}
+                    key={note.id}
                     fileName={note.fileName}
                     fileType={note.fileType}
                     uploadedOn={note.uploadedOn}
+                    onDelete = {() => handleDeleteNote(note.id)}
                     />
                     ))}
                 </main>
-            <AIPanel />
+            <AIPanel subject={subject} />
             
         </div>
     );
