@@ -48,6 +48,24 @@ function SubjectPage() {
                             })
                         );
                     }
+    function handleRename(noteId, newName){
+        setSubjects((prevSubjects) =>
+            prevSubjects.map((subject) => {
+            if (subject.id === Number(id)) {
+                return {
+                    ...subject,
+                    notes: subject.notes.map((note) => {
+                        if (note.id === noteId) {
+                            return {
+                                ...note,
+                                fileName: newName
+                            };
+                        }
+
+                        return note;
+                    })
+                };}
+        return subject; }));}
     return (
         <div className="flex min-h-screen">
             <Sidebar />
@@ -74,7 +92,7 @@ function SubjectPage() {
                     fileType={note.fileType}
                     uploadedOn={note.uploadedOn}
                     onDelete = {() => handleDeleteNote(note.id)}
-                    />
+                    onRename = {(newName) => handleRename(note.id, newName)}/>
                     ))}
                 </main>
             <AIPanel subject={subject} />
