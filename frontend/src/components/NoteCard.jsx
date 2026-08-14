@@ -1,5 +1,5 @@
 import {useState} from "react";
-function NoteCard({fileName ,onRename , onDelete, fileType, uploadedOn}){
+function NoteCard({fileName , fileUrl ,onRename , onDelete, fileType, uploadedOn}){
     const [isEditing, setIsEditing] = useState(false);
     const [newName, setNewName] = useState(fileName);
     const [showMenu , setShowMenu] = useState(false);
@@ -23,7 +23,7 @@ function NoteCard({fileName ,onRename , onDelete, fileType, uploadedOn}){
             relative" >
             <div className="flex
                 items-center
-                gap-4" onClick={() => console.log("Open note")}>📄
+                gap-4" onClick={() => window.open(fileUrl, "_blank")}>📄
             <div className="flex flex-col">
                 {isEditing ? (
                     <input value={newName}

@@ -20,8 +20,9 @@ function SubjectPage() {
         id: Date.now(),
         fileName: file.name,
         fileType: file.type,
-        uploadedOn: "Today",};
-        console.log(file);
+        uploadedOn: "Today",
+        fileUrl: URL.createObjectURL(file)};
+        
         setSubjects(
         subjects.map((subject) => {
         if (subject.id === Number(id)) {
@@ -92,8 +93,9 @@ function SubjectPage() {
                     fileType={note.fileType}
                     uploadedOn={note.uploadedOn}
                     onDelete = {() => handleDeleteNote(note.id)}
-                    onRename = {(newName) => handleRename(note.id, newName)}/>
-                    ))}
+                    onRename = {(newName) => handleRename(note.id, newName)}
+                    fileUrl = {note.fileUrl}   />
+                     ))}
                 </main>
             <AIPanel subject={subject} />
             

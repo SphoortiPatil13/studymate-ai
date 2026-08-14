@@ -1,6 +1,7 @@
 import Button from "./Button";
 import Input from "./Input";
 import { useState , useRef , useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
 function AIPanel({subject}) {
     console.log(subject);
@@ -21,7 +22,7 @@ function AIPanel({subject}) {
       messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",});
       }, [messages]);
-    function handleSend(){
+    async function handleSend(){
         if (input.trim() === "") return;
          const userMessage = {
     id: Date.now(),
@@ -32,18 +33,26 @@ function AIPanel({subject}) {
             ...prevMessages,
             userMessage,
         ]);
-
+        const question=input;
         setInput("");
-        setTimeout(() => {
+        const response = await fetch("http://127.0.0.1:8000/ask", {
+                method: "POST",
+                headers: {"Content-Type": "application/json",
+                          },
+                body: JSON.stringify({
+                question: question,
+              }),
+        });
+        const data = await response.json();
           const aiMessage = {
               id: Date.now() + 1,
               sender: "ai",
-              text: "I'm not connected yet, but soon I'll answer using your uploaded notes."};
+              text: data.answer};
             setMessages((prevMessages) => [
               ...prevMessages,
               aiMessage,
             ]);
-            }, 1000)
+            
     }
     
   return (
@@ -71,7 +80,7 @@ function AIPanel({subject}) {
             ? "bg-violet-600 text-white"
             : "bg-violet-100 text-black"
            }`}>
-          {message.text} 
+          <ReactMarkdown>{message.text}</ReactMarkdown>
           </div> </div>))}
           <div ref={messagesEndRef}></div>
       </div>
