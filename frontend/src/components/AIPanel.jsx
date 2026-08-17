@@ -16,6 +16,7 @@ function AIPanel({subject}) {
     text: "Upload your notes and ask me anything about them.",
   },]);
     const [input , setInput] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
     useEffect(() => {
@@ -23,7 +24,8 @@ function AIPanel({subject}) {
       behavior: "smooth",});
       }, [messages]);
     async function handleSend(){
-        if (input.trim() === "") return;
+        if (input.trim() === "" || isLoading) return;
+        setIsLoading(true);
          const userMessage = {
     id: Date.now(),
     sender: "user",
@@ -35,6 +37,7 @@ function AIPanel({subject}) {
         ]);
         const question=input;
         setInput("");
+        try{
         const response = await fetch("http://127.0.0.1:8000/ask", {
                 method: "POST",
                 headers: {"Content-Type": "application/json",
@@ -43,7 +46,11 @@ function AIPanel({subject}) {
                 question: question,
               }),
         });
+        if (!response.ok){
+          throw new Error("Something went wrong with the request");
+        }
         const data = await response.json();
+        setIsLoading(false);
           const aiMessage = {
               id: Date.now() + 1,
               sender: "ai",
@@ -52,8 +59,24 @@ function AIPanel({subject}) {
               ...prevMessages,
               aiMessage,
             ]);
-            
+          } catch (error){
+            const errorMessage ={
+              id: Date.now() + 1,
+              sender:"ai",
+              text:"Sorry, I couldn't get a response right now. Please try again. "
+            };
+             setMessages((prevMessages) => [
+            ...prevMessages,
+            errorMessage,
+        ]);
+
+        console.error(error);
+
+    } finally {
+        setIsLoading(false);
     }
+          }
+            
     
   return (
     <aside className="w-96 border-l bg-white flex flex-col">
@@ -82,6 +105,13 @@ function AIPanel({subject}) {
            }`}>
           <ReactMarkdown>{message.text}</ReactMarkdown>
           </div> </div>))}
+          {isLoading && (
+          <div className="flex mb-4 justify-start">
+            <div className="p-3 rounded-2xl bg-violet-100 text-black">
+              🤖 Thinking...
+            </div>
+          </div>
+          )}
           <div ref={messagesEndRef}></div>
       </div>
 
@@ -96,7 +126,7 @@ function AIPanel({subject}) {
             />
             </div>
 
-        <Button text="➤" className="px-5 py-3" onClick={handleSend}/>
+        <Button text="➤" className="px-5 py-3" onClick={handleSend} disabled={isLoading}/>
         </div>
     </aside>
   );
