@@ -13,15 +13,30 @@ function SubjectPage() {
     if (!subject) {
     return <h1>Subject not found</h1>;
 };
-    function handleFileUpload(e){
+    async function handleFileUpload(e){
         const file = e.target.files[0];
         if (!file) return;
+        const formData = new FormData();
+        formData.append("file", file);
+        const response = await fetch("http://127.0.0.1:8000/upload", {
+        method: "POST",
+        body: formData,
+        });
+        const data = await response.json();
+        console.log(data);
+        const extractResponse = await fetch("http://127.0.0.1:8000/extract", {
+        method: "POST",
+        body: formData,
+        });
+        const extractedData = await extractResponse.json();
+        console.log(extractedData);
         const newNote = {
         id: Date.now(),
         fileName: file.name,
         fileType: file.type,
         uploadedOn: "Today",
-        fileUrl: URL.createObjectURL(file)};
+        fileUrl: URL.createObjectURL(file),
+        text: extractedData.text};
         
         setSubjects(
         subjects.map((subject) => {

@@ -23,59 +23,86 @@ function AIPanel({subject}) {
       messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",});
       }, [messages]);
-    async function handleSend(){
-        if (input.trim() === "" || isLoading) return;
-        setIsLoading(true);
-         const userMessage = {
-    id: Date.now(),
-    sender: "user",
-    text: input,
+    async function handleSend() {
+    if (input.trim() === "" || isLoading) return;
+
+    setIsLoading(true);
+
+    const userMessage = {
+        id: Date.now(),
+        sender: "user",
+        text: input,
     };
+
     setMessages((prevMessages) => [
-            ...prevMessages,
-            userMessage,
-        ]);
-        const question=input;
-        setInput("");
-        try{
-        const response = await fetch("http://127.0.0.1:8000/ask", {
-                method: "POST",
-                headers: {"Content-Type": "application/json",
-                          },
-                body: JSON.stringify({
+        ...prevMessages,
+        userMessage,
+    ]);
+
+    const question = input;
+    setInput("");
+
+    try {
+        // Get text from all notes uploaded to this subject
+        const noteText = subject.notes
+            .map((note) => note.text || "")
+            .join("\n\n");
+        const hasNotes = noteText.trim().length > 0;
+
+        const endpoint = hasNotes
+        ? "http://127.0.0.1:8000/ask-from-notes"
+        : "http://127.0.0.1:8000/ask";
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(
+              hasNotes
+              ?{
                 question: question,
-              }),
+                note_text: noteText,
+            }
+            :{
+                question: question
+            }),
         });
-        if (!response.ok){
-          throw new Error("Something went wrong with the request");
+
+        if (!response.ok) {
+            throw new Error("Something went wrong with the request");
         }
+
         const data = await response.json();
-        setIsLoading(false);
-          const aiMessage = {
-              id: Date.now() + 1,
-              sender: "ai",
-              text: data.answer};
-            setMessages((prevMessages) => [
-              ...prevMessages,
-              aiMessage,
-            ]);
-          } catch (error){
-            const errorMessage ={
-              id: Date.now() + 1,
-              sender:"ai",
-              text:"Sorry, I couldn't get a response right now. Please try again. "
-            };
-             setMessages((prevMessages) => [
+
+        const aiMessage = {
+            id: Date.now() + 1,
+            sender: "ai",
+            text: data.answer,
+        };
+
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            aiMessage,
+        ]);
+
+    } catch (error) {
+        console.error(error);
+
+        const errorMessage = {
+            id: Date.now() + 1,
+            sender: "ai",
+            text: "Sorry, I couldn't get a response right now. Please try again.",
+        };
+
+        setMessages((prevMessages) => [
             ...prevMessages,
             errorMessage,
         ]);
 
-        console.error(error);
-
     } finally {
         setIsLoading(false);
     }
-          }
+}
             
     
   return (
