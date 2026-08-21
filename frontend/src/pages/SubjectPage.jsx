@@ -13,43 +13,61 @@ function SubjectPage() {
     if (!subject) {
     return <h1>Subject not found</h1>;
 };
-    async function handleFileUpload(e){
-        const file = e.target.files[0];
-        if (!file) return;
-        const formData = new FormData();
-        formData.append("file", file);
-        const response = await fetch("http://127.0.0.1:8000/upload", {
-        method: "POST",
-        body: formData,
-        });
-        const data = await response.json();
-        console.log(data);
-        const extractResponse = await fetch("http://127.0.0.1:8000/extract", {
-        method: "POST",
-        body: formData,
-        });
-        const extractedData = await extractResponse.json();
-        console.log(extractedData);
-        const newNote = {
-        id: Date.now(),
-        fileName: file.name,
-        fileType: file.type,
-        uploadedOn: "Today",
-        fileUrl: URL.createObjectURL(file),
-        text: extractedData.text};
-        
-        setSubjects(
-        subjects.map((subject) => {
-        if (subject.id === Number(id)) {
-            return {
-                ...subject,
-                notes: [...subject.notes, newNote]
-            };
+    async function handleFileUpload(e) {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const formData = new FormData();
+
+    formData.append("file", file);
+    formData.append("subject_id", id);
+
+    try {
+        const response = await fetch(
+            "http://127.0.0.1:8000/extract",
+            {
+                method: "POST",
+                body: formData,
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to upload note");
         }
 
-        return subject;
-    })
-);
+        const extractedData = await response.json();
+
+        console.log(extractedData);
+
+        const newNote = {
+            id: extractedData.id,
+            fileName: extractedData.filename,
+            fileType: file.type,
+            uploadedOn: "Today",
+            fileUrl: URL.createObjectURL(file),
+            text: extractedData.text,
+        };
+
+        setSubjects((prevSubjects) =>
+            prevSubjects.map((subject) => {
+                if (subject.id === Number(id)) {
+                    return {
+                        ...subject,
+                        notes: [
+                            ...subject.notes,
+                            newNote,
+                        ],
+                    };
+                }
+
+                return subject;
+            })
+        );
+
+    } catch (error) {
+        console.error("Upload error:", error);
+    }
     }
     function handleDeleteNote(noteId) {
                         setSubjects(

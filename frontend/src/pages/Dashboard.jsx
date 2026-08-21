@@ -8,13 +8,41 @@ import CreateSubjectModal from "../components/CreateSubjectModal";
 function Dashboard(){
     const { subjects, setSubjects } = useContext(SubjectsContext);
     const [showModal, setShowModal]= useState(false);
-    function handleCreateSubject(subjectName){
-        const newSubject = { id: Date.now(),
-                            title: subjectName, 
-                            notes: []};
-        setSubjects((prevSubjects) => [...prevSubjects, newSubject]);
-        setShowModal(false);
+   async function handleCreateSubject(subjectName) {
+    try {
+        const response = await fetch("http://127.0.0.1:8000/subjects", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                title: subjectName,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to create subject");
         }
+
+        const data = await response.json();
+
+        const newSubject = {
+            id: data.id,
+            title: data.title,
+            notes: [],
+        };
+
+        setSubjects((prevSubjects) => [
+            ...prevSubjects,
+            newSubject,
+        ]);
+
+        setShowModal(false);
+
+    } catch (error) {
+        console.error(error);
+    }
+    }
     console.log(subjects);
     return(
         <>

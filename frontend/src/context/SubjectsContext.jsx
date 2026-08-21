@@ -3,36 +3,38 @@ import { createContext, useState, useEffect } from "react";
 export const SubjectsContext = createContext();
 
 function SubjectsProvider({ children }) {
-    const [subjects, setSubjects] = useState(() => {
-        const savedSubjects = localStorage.getItem("subjects");
-
-        if (savedSubjects) {
-            return JSON.parse(savedSubjects);
-        }
-
-        return [
-            {
-                id: 1,
-                title: "Artificial Intelligence",
-                notes: [
-                    {
-                        fileName: "Unit1.pdf",
-                        fileType: "PDF",
-                        uploadedOn: "Today",
-                    },
-                ],
-            },
-            {
-                id: 2,
-                title: "DBMS",
-                notes: [],
-            },
-        ];
-    });
+    const [subjects, setSubjects] = useState([]);
 
     useEffect(() => {
-        localStorage.setItem("subjects", JSON.stringify(subjects));
-    }, [subjects]);
+        async function fetchSubjects() {
+            try {
+                const response = await fetch(
+                    "http://127.0.0.1:8000/subjects"
+                );
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch subjects");
+                }
+
+                const data = await response.json();
+
+                // Add an empty notes array because notes
+                // are not stored in MySQL yet
+                const formattedSubjects = data.map((subject) => ({
+                    id: subject.id,
+                    title: subject.title,
+                    notes: [],
+                }));
+
+                setSubjects(formattedSubjects);
+
+            } catch (error) {
+                console.error("Error loading subjects:", error);
+            }
+        }
+
+        fetchSubjects();
+    }, []);
 
     return (
         <SubjectsContext.Provider value={{ subjects, setSubjects }}>
