@@ -8,6 +8,7 @@ function SubjectsProvider({ children }) {
     useEffect(() => {
         async function fetchSubjects() {
             try {
+                // Get all subjects
                 const response = await fetch(
                     "http://127.0.0.1:8000/subjects"
                 );
@@ -16,17 +17,35 @@ function SubjectsProvider({ children }) {
                     throw new Error("Failed to fetch subjects");
                 }
 
-                const data = await response.json();
+                const subjectsData = await response.json();
 
-                // Add an empty notes array because notes
-                // are not stored in MySQL yet
-                const formattedSubjects = data.map((subject) => ({
-                    id: subject.id,
-                    title: subject.title,
-                    notes: [],
-                }));
+                // Get notes for every subject
+                const subjectsWithNotes = await Promise.all(
+                    subjectsData.map(async (subject) => {
 
-                setSubjects(formattedSubjects);
+                        const notesResponse = await fetch(
+                            `http://127.0.0.1:8000/subjects/${subject.id}/notes`
+                        );
+
+                        const notesData = await notesResponse.json();
+
+                        return {
+                            id: subject.id,
+                            title: subject.title,
+
+                            notes: notesData.map((note) => ({
+                                id: note.id,
+                                fileName: note.file_name,
+                                fileType: note.file_type,
+                                uploadedOn: note.uploaded_at,
+                                fileUrl: `http://127.0.0.1:8000/${note.file_path}`,
+                                text: note.extracted_text,
+                            })),
+                        };
+                    })
+                );
+
+                setSubjects(subjectsWithNotes);
 
             } catch (error) {
                 console.error("Error loading subjects:", error);

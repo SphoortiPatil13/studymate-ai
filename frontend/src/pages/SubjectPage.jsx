@@ -69,37 +69,85 @@ function SubjectPage() {
         console.error("Upload error:", error);
     }
     }
-    function handleDeleteNote(noteId) {
-                        setSubjects(
-                            (prevSubjects) => prevSubjects.map((s) => {
-                                if (s.id === Number(id)) {
-                                    return {
-                                        ...s,
-                                        notes: s.notes.filter((n) => n.id !== noteId)
-                                    };
-                                }
-                                return s;
-                            })
-                        );
-                    }
-    function handleRename(noteId, newName){
+    async function handleDeleteNote(noteId) {
+    try {
+        const response = await fetch(
+            `http://127.0.0.1:8000/notes/${noteId}`,
+            {
+                method: "DELETE",
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to delete note");
+        }
+
         setSubjects((prevSubjects) =>
             prevSubjects.map((subject) => {
-            if (subject.id === Number(id)) {
-                return {
-                    ...subject,
-                    notes: subject.notes.map((note) => {
-                        if (note.id === noteId) {
-                            return {
-                                ...note,
-                                fileName: newName
-                            };
-                        }
+                if (subject.id === Number(id)) {
+                    return {
+                        ...subject,
+                        notes: subject.notes.filter(
+                            (note) => note.id !== noteId
+                        ),
+                    };
+                }
 
-                        return note;
-                    })
-                };}
-        return subject; }));}
+                return subject;
+            })
+        );
+
+    } catch (error) {
+        console.error("Delete error:", error);
+    }
+}
+    async function handleRename(noteId, newName) {
+    try {
+        const response = await fetch(
+            `http://127.0.0.1:8000/notes/${noteId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    file_name: newName,
+                }),
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to rename note");
+        }
+
+        const data = await response.json();
+
+        setSubjects((prevSubjects) =>
+            prevSubjects.map((subject) => {
+                if (subject.id === Number(id)) {
+                    return {
+                        ...subject,
+                        notes: subject.notes.map((note) => {
+                            if (note.id === noteId) {
+                                return {
+                                    ...note,
+                                    fileName: data.file_name,
+                                };
+                            }
+
+                            return note;
+                        }),
+                    };
+                }
+
+                return subject;
+            })
+        );
+
+    } catch (error) {
+        console.error("Rename error:", error);
+    }
+}
     return (
         <div className="flex min-h-screen">
             <Sidebar />

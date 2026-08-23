@@ -8,7 +8,31 @@ import CreateSubjectModal from "../components/CreateSubjectModal";
 function Dashboard(){
     const { subjects, setSubjects } = useContext(SubjectsContext);
     const [showModal, setShowModal]= useState(false);
-   async function handleCreateSubject(subjectName) {
+    async function handleDeleteSubject(subjectId) {
+    try {
+        const response = await fetch(
+            `http://127.0.0.1:8000/subjects/${subjectId}`,
+            {
+                method: "DELETE",
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to delete subject");
+        }
+
+        setSubjects((prevSubjects) =>
+            prevSubjects.filter(
+                (subject) => subject.id !== subjectId
+            )
+        );
+
+    } catch (error) {
+        console.error("Delete subject error:", error);
+    }
+}
+    
+    async function handleCreateSubject(subjectName) {
     try {
         const response = await fetch("http://127.0.0.1:8000/subjects", {
             method: "POST",
@@ -57,7 +81,7 @@ function Dashboard(){
             <div className="flex flex-wrap gap-6">
             <CreateSubjectCard title="Add Subject" onClick={() => setShowModal(true)} />
             {subjects.map((subject) => (
-                <SubjectCard key={subject.id} id={subject.id} title={subject.title} notes={subject.notes.length} />
+                <SubjectCard key={subject.id} id={subject.id} title={subject.title} notes={subject.notes.length} onDelete={handleDeleteSubject} />
             ))}
            
             </div>
