@@ -9,16 +9,23 @@ function SubjectsProvider({ children }) {
         async function fetchSubjects() {
             try {
                 // Get all subjects
+                const token = localStorage.getItem("token");
+                console.log("Token being sent:", token);
                 const response = await fetch(
-                    "http://127.0.0.1:8000/subjects"
+                    "http://127.0.0.1:8000/subjects",
+                    {
+                        headers: {
+                            Authorization:`Bearer ${token}`,
+                        },
+                    }
                 );
-
+                console.log("Subjects response:", response.status);
                 if (!response.ok) {
                     throw new Error("Failed to fetch subjects");
                 }
 
                 const subjectsData = await response.json();
-
+                console.log("Subjects data:", subjectsData);
                 // Get notes for every subject
                 const subjectsWithNotes = await Promise.all(
                     subjectsData.map(async (subject) => {
