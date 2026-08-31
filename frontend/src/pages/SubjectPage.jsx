@@ -75,6 +75,9 @@ function SubjectPage() {
             `http://127.0.0.1:8000/notes/${noteId}`,
             {
                 method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
             }
         );
 
@@ -109,6 +112,7 @@ function SubjectPage() {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
+                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify({
                     file_name: newName,

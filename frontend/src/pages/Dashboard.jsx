@@ -14,6 +14,9 @@ function Dashboard(){
             `http://127.0.0.1:8000/subjects/${subjectId}`,
             {
                 method: "DELETE",
+                 headers: {
+                 Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
             }
         );
 
