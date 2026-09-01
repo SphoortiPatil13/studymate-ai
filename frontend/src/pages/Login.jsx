@@ -48,7 +48,7 @@ function Login() {
       "user",
       JSON.stringify(data.user)
     );
-
+    window.dispatchEvent(new Event("authChanged"));
     navigate("/dashboard");
 
   } catch (error) {
