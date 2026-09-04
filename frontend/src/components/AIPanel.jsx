@@ -17,12 +17,77 @@ function AIPanel({subject}) {
   },]);
     const [input , setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [chatId, setChatId] = useState(null);
+    const [chats, setChats] = useState([]);
     const messagesEndRef = useRef(null);
-
     useEffect(() => {
       messagesEndRef.current?.scrollIntoView({
       behavior: "smooth",});
       }, [messages]);
+    useEffect(() => {
+    async function fetchChats() {
+        try {
+            const response = await fetch(
+                `http://127.0.0.1:8000/subjects/${subject.id}/chats`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch chats");
+            }
+
+            const data = await response.json();
+
+            setChats(data);
+            if (data.length > 0) {
+              setChatId(data[0].id);
+            }
+        } catch (error) {
+            console.error("Error loading chats:", error);
+        }
+    }
+
+    fetchChats();
+    }, [subject.id]);
+    useEffect(() => {
+    if (!chatId) return;
+
+    async function fetchMessages() {
+        try {
+            const response = await fetch(
+                `http://127.0.0.1:8000/chats/${chatId}/messages`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch messages");
+            }
+
+            const data = await response.json();
+
+            const formattedMessages = data.map((message) => ({
+                id: message.id,
+                sender: message.sender,
+                text: message.message,
+            }));
+
+            setMessages(formattedMessages);
+
+        } catch (error) {
+            console.error("Error loading messages:", error);
+        }
+    }
+
+    fetchMessages();
+}, [chatId]);
     async function handleSend() {
     if (input.trim() === "" || isLoading) return;
 
@@ -43,7 +108,50 @@ function AIPanel({subject}) {
     setInput("");
 
     try {
-        // Get text from all notes uploaded to this subject
+         let currentChatId = chatId;
+
+    // Create a new chat if this is the first question
+    if (!currentChatId) {
+        const chatResponse = await fetch(
+            "http://127.0.0.1:8000/chats",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({
+                    subject_id: subject.id,
+                    title: question.slice(0, 50),
+                }),
+            }
+        );
+
+        if (!chatResponse.ok) {
+            throw new Error("Failed to create chat");
+        }
+
+        const chatData = await chatResponse.json();
+
+        currentChatId = chatData.id;
+        setChatId(chatData.id);
+    }
+      // Save user's message
+      await fetch(
+        `http://127.0.0.1:8000/chats/${currentChatId}/messages`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+            body: JSON.stringify({
+            sender: "user",
+            message: question,
+          }),
+        }
+      );
+      // Get text from all notes uploaded to this subject
         const noteText = subject.notes
             .map((note) => note.text || "")
             .join("\n\n");
@@ -74,7 +182,21 @@ function AIPanel({subject}) {
         }
 
         const data = await response.json();
-
+        // Save AI response
+        await fetch(
+          `http://127.0.0.1:8000/chats/${currentChatId}/messages`,
+          {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            sender: "ai",
+            message: data.answer,
+            }),
+          }
+        );
         const aiMessage = {
             id: Date.now() + 1,
             sender: "ai",
@@ -104,7 +226,7 @@ function AIPanel({subject}) {
         setIsLoading(false);
     }
 }
-            
+console.log("Chats:", chats);            
     
   return (
     <aside className="w-96 border-l bg-white flex flex-col">
