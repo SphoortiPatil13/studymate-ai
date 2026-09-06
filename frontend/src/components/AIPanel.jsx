@@ -88,6 +88,24 @@ function AIPanel({subject}) {
 
     fetchMessages();
 }, [chatId]);
+
+    function handleNewChat() {
+    setChatId(null);
+
+    setMessages([
+        {
+            id: 1,
+            sender: "ai",
+            text: "👋 Hi! I'm StudyMate AI.",
+        },
+        {
+            id: 2,
+            sender: "ai",
+            text: "Upload your notes and ask me anything about them.",
+        },
+       ]);
+    }
+
     async function handleSend() {
     if (input.trim() === "" || isLoading) return;
 
@@ -135,6 +153,15 @@ function AIPanel({subject}) {
 
         currentChatId = chatData.id;
         setChatId(chatData.id);
+
+        setChats((prevChats) => [
+    {
+        id: chatData.id,
+        title: chatData.title,
+        subject_id: chatData.subject_id,
+        },
+        ...prevChats,
+        ]);
     }
       // Save user's message
       await fetch(
@@ -233,6 +260,36 @@ console.log("Chats:", chats);
       <h2 className="text-2xl font-bold p-6 border-b">
         🤖 AI Study Assistant
       </h2>
+      <div className="p-4 border-b">
+        <div className="flex justify-between items-center mb-3">
+        <h3 className="font-semibold text-lg">
+            Chat History
+        </h3>
+
+        <button
+            onClick={handleNewChat}
+            className="text-sm text-violet-600 hover:underline"
+        >
+            + New Chat
+        </button>
+        </div>
+
+        <div className="space-y-2">
+        {chats.map((chat) => (
+            <button
+                key={chat.id}
+                onClick={() => setChatId(chat.id)}
+                className={`w-full text-left p-2 rounded-lg hover:bg-violet-50 ${
+                chat.id === chatId
+                    ? "bg-violet-100 font-semibold"
+                    : ""
+                }`}
+            >
+            {chat.title}
+            </button>
+            ))}
+        </div>
+    </div>
       <div className="px-6 py-3 border-b text-sm text-slate-600">
       <p>
         <strong>Subject:</strong> {subject.title}
