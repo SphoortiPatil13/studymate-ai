@@ -2,11 +2,12 @@ import { useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import UploadNotesCard from "../components/UploadNotesCard";
 import NoteCard from "../components/NoteCard";
-import { useRef , useContext } from "react";
+import { useRef , useContext , useState} from "react";
 import {SubjectsContext} from "../context/SubjectsContext";
 import AIPanel from "../components/AIPanel";
 function SubjectPage() {
     const { id } = useParams();
+    const [showAIPanel, setShowAIPanel] = useState(true);
     const fileInputRef = useRef(null);
     const { subjects, setSubjects } = useContext(SubjectsContext);
     const subject = subjects.find((subject) => subject.id === Number(id)) 
@@ -182,7 +183,21 @@ function SubjectPage() {
                     fileUrl = {note.fileUrl}   />
                      ))}
                 </main>
-            <AIPanel subject={subject} />
+            {showAIPanel && (
+                <AIPanel
+                    subject={subject}
+                    onClose={() => setShowAIPanel(false)}
+                />
+            )}
+
+            {!showAIPanel && (
+                <button
+                    onClick={() => setShowAIPanel(true)}
+                    className="fixed right-4 top-4 z-50 bg-violet-600 text-white px-4 py-2 rounded-lg shadow hover:bg-violet-700"
+                >
+                🤖 AI
+                </button>
+            )}
             
         </div>
     );

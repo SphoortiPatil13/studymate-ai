@@ -3,8 +3,9 @@ import Input from "./Input";
 import { useState , useRef , useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 
-function AIPanel({subject}) {
+function AIPanel({subject, onClose}) {
     console.log(subject);
+    const [panelWidth, setPanelWidth] = useState(384);
     const [messages, setMessages]= useState([{
     id: 1,
     sender: "ai",
@@ -15,6 +16,7 @@ function AIPanel({subject}) {
     sender: "ai",
     text: "Upload your notes and ask me anything about them.",
   },]);
+    
     const [input , setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [chatId, setChatId] = useState(null);
@@ -26,6 +28,22 @@ function AIPanel({subject}) {
       }, [messages]);
     useEffect(() => {
     async function fetchChats() {
+        setChatId(null);
+
+        setMessages([
+        {
+            id: 1,
+            sender: "ai",
+            text: "👋 Hi! I'm StudyMate AI.",
+        },
+        {
+            id: 2,
+            sender: "ai",
+            text: "Upload your notes and ask me anything about them.",
+        },
+        ]);
+
+        setChats([]);
         try {
             const response = await fetch(
                 `http://127.0.0.1:8000/subjects/${subject.id}/chats`,
@@ -88,6 +106,26 @@ function AIPanel({subject}) {
 
     fetchMessages();
 }, [chatId]);
+    function handleResize(e) {
+    const startX = e.clientX;
+    const startWidth = panelWidth;
+
+    function handleMouseMove(event) {
+        const newWidth = startWidth - (event.clientX - startX);
+
+        if (newWidth >= 320 && newWidth <= 600) {
+            setPanelWidth(newWidth);
+        }
+    }
+
+    function handleMouseUp() {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+    }
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
+}
 
     function handleNewChat() {
     setChatId(null);
@@ -256,7 +294,22 @@ function AIPanel({subject}) {
 console.log("Chats:", chats);            
     
   return (
-    <aside className="w-96 border-l bg-white flex flex-col">
+    <aside
+    style={{ width: `${panelWidth}px` }}
+    className="relative min-w-[320px] max-w-[600px] border-l bg-white flex flex-col"
+    >
+       <div
+        onMouseDown={handleResize}
+        className="absolute left-0 top-0 h-full w-1 cursor-col-resize hover:bg-violet-400"
+        title="Drag to resize"
+       ></div> 
+      <button
+        onClick={onClose}
+        className="absolute right-3 top-3 text-slate-500 hover:text-red-500 text-lg"
+            title="Close AI Panel"
+        >
+            ✕
+    </button>
       <h2 className="text-2xl font-bold p-6 border-b">
         🤖 AI Study Assistant
       </h2>
@@ -305,12 +358,70 @@ console.log("Chats:", chats);
               ? "justify-end"
               : "justify-start"
             }`}>
-         <div className={`p-3 rounded-2xl max-w-[75%] ${
+         <div className={`p-3 rounded-2xl max-w-[75%] min-w-0 overflow-hidden ${
           message.sender === "user"
             ? "bg-violet-600 text-white"
             : "bg-violet-100 text-black"
            }`}>
-          <ReactMarkdown>{message.text}</ReactMarkdown>
+          <ReactMarkdown
+        components={{
+            p: ({ children }) => (
+            <p className="mb-3 last:mb-0 leading-relaxed">
+                {children}
+            </p>
+            ),
+
+            ul: ({ children }) => (
+            <ul className="list-disc ml-5 mb-3 space-y-1">
+                {children}
+            </ul>
+            ),
+
+            ol: ({ children }) => (
+            <ol className="list-decimal ml-5 mb-3 space-y-1">
+                {children}
+            </ol>
+            ),
+
+            li: ({ children }) => (
+            <li className="leading-relaxed">
+                {children}
+            </li>
+            ),
+
+            h1: ({ children }) => (
+            <h1 className="text-xl font-bold mb-2">
+                {children}
+            </h1>
+            ),
+
+            h2: ({ children }) => (
+            <h2 className="text-lg font-bold mb-2">
+                {children}
+            </h2>
+            ),
+
+            h3: ({ children }) => (
+            <h3 className="font-bold mb-2">
+                {children}
+            </h3>
+            ),
+
+            pre: ({ children }) => (
+            <pre className="overflow-x-auto max-w-full bg-white p-3 rounded-lg mb-3 text-sm">
+                {children}
+            </pre>
+            ),
+
+            code: ({ children }) => (
+            <code className="break-words">
+                {children}
+            </code>
+            ),
+            }}
+                >
+                {message.text}
+            </ReactMarkdown>
           </div> </div>))}
           {isLoading && (
           <div className="flex mb-4 justify-start">
