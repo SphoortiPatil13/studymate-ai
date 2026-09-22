@@ -29,7 +29,7 @@ function SubjectsProvider({ children }) {
       const subjectsWithNotes = await Promise.all(
         subjectsData.map(async (subject) => {
           const notesResponse = await fetch(
-            `http://127.0.0.1:8000/subjects/${subject.id}/notes`,
+            `${import.meta.env.VITE_API_URL}/subjects/${subject.id}/notes`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
