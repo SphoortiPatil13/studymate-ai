@@ -523,7 +523,9 @@ async def extract_pdf(
 
     with open(file_path, "wb") as f:
         f.write(contents)
-
+    print("PDF filename:", file.filename)
+    print("PDF size:", len(contents))
+    print("Saved file size:", os.path.getsize(file_path))
     reader = PdfReader(file_path)
 
     text = ""

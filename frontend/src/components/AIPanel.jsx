@@ -50,7 +50,7 @@ function AIPanel({ subject, onClose }) {
       setChats([]);
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/subjects/${subject.id}/chats`,
+           `${import.meta.env.VITE_API_URL}/subjects/${subject.id}/chats`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -81,7 +81,7 @@ function AIPanel({ subject, onClose }) {
     async function fetchMessages() {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/chats/${chatId}/messages`,
+          `${import.meta.env.VITE_API_URL}/chats/${chatId}/messages`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -168,7 +168,7 @@ function AIPanel({ subject, onClose }) {
 
       // Create a new chat if this is the first question
       if (!currentChatId) {
-        const chatResponse = await fetch("http://127.0.0.1:8000/chats", {
+        const chatResponse = await fetch(`${import.meta.env.VITE_API_URL}/chats`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -199,7 +199,7 @@ function AIPanel({ subject, onClose }) {
         ]);
       }
       // Save user's message
-      await fetch(`http://127.0.0.1:8000/chats/${currentChatId}/messages`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/chats/${currentChatId}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -217,8 +217,8 @@ function AIPanel({ subject, onClose }) {
       const hasNotes = noteText.trim().length > 0;
 
       const endpoint = hasNotes
-        ? "http://127.0.0.1:8000/ask-from-notes"
-        : "http://127.0.0.1:8000/ask";
+        ? `${import.meta.env.VITE_API_URL}/ask-from-notes`
+        : `${import.meta.env.VITE_API_URL}/ask`;
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -243,7 +243,7 @@ function AIPanel({ subject, onClose }) {
 
       const data = await response.json();
       // Save AI response
-      await fetch(`http://127.0.0.1:8000/chats/${currentChatId}/messages`, {
+      await fetch(`${import.meta.env.VITE_API_URL}/chats/${currentChatId}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -26,7 +26,7 @@ function SubjectPage() {
 
     try {
         const response = await fetch(
-            "http://127.0.0.1:8000/extract",
+            `${import.meta.env.VITE_API_URL}/extract`,
             {
                 method: "POST",
                 body: formData,
@@ -73,7 +73,7 @@ function SubjectPage() {
     async function handleDeleteNote(noteId) {
     try {
         const response = await fetch(
-            `http://127.0.0.1:8000/notes/${noteId}`,
+            `${import.meta.env.VITE_API_URL}/notes/${noteId}`,
             {
                 method: "DELETE",
                 headers: {
@@ -108,7 +108,7 @@ function SubjectPage() {
     async function handleRename(noteId, newName) {
     try {
         const response = await fetch(
-            `http://127.0.0.1:8000/notes/${noteId}`,
+            `${import.meta.env.VITE_API_URL}/notes/${noteId}`,
             {
                 method: "PUT",
                 headers: {
