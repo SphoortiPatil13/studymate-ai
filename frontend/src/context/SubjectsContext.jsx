@@ -48,7 +48,7 @@ function SubjectsProvider({ children }) {
               fileName: note.file_name,
               fileType: note.file_type,
               uploadedOn: note.uploaded_at,
-              fileUrl: `http://127.0.0.1:8000/${note.file_path}`,
+              fileUrl: `${import.meta.env.VITE_API_URL}/${note.file_path}`,
               text: note.extracted_text,
             })),
           };
