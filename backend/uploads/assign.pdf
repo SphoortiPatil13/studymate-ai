@@ -1,0 +1,120 @@
+                                     Assignment 4 
+
+1. What happens if you use list comprehension without assigning it to a variable?
+a) Raises a syntax error
+b) It creates a list but doesn't store it
+c) It modifies the original list
+d) It returns a generator object
+Answer: b) It creates a list but doesn't store it
+
+2. In a list comprehension, what does the expression represent?
+a) The iterable being traversed
+b) The condition for filtering elements
+c) The value to be included in the new list
+d) The index of the current element
+Answer: c) The value to be included in the new list
+
+3. What is the role of if class in list comprehension?
+a) It sets the value of expression
+b) It creates the filter for element
+c) It is used for iteration
+d) It reverses the order of elements
+Answer: b) It creates the filter for element
+
+4. Which statement is true about an OrderedDict?
+a) It does not maintain the order of elements
+b) It raises a KeyError if the key is missing
+c) It remembers the order in which keys are inserted
+d) It allows only numerical keys
+Answer: c) It remembers the order in which keys are inserted
+
+5. What happens when you try to access a missing key in defaultdict?
+a) It returns None
+b) It raises a KeyError
+c) It removes the key from dictionary
+d) It returns the default value set for the dictionary
+Answer: d) It returns the default value set for the dictionary
+
+6. Which of the following is not part of the collections module?
+a) Counter
+b) OrderedDict
+c) ArrayList
+d) deque
+Answer: c) ArrayList
+
+-----------------------------------------------------------------------------------------------
+
+# write a program that iterates over elements as many times as its count
+print("Program that iterates over elements as many times as its count:")
+l=[1,2,3,4,4,2,3,1,3,2,1,2]
+d={}
+for i in l:
+    if i in d:
+        d[i]+=1
+    else:
+        d[i]=1
+for key,value in d.items():
+    for i in range(value):
+        print(key)
+print("--------------------------------------------------------------------------")
+
+# write a program that iterates through words/elements and displays only the element at a given index and breaks at the third index
+print("iterates over specified index and breaks at third index: ")
+s=input("enter a string:")
+l=s.split()
+ind=int(input("enter the index:"))
+for i in range(len(l)):
+    if i == ind:
+        print(l[i])
+    if i ==3:
+        break
+print("--------------------------------------------------------------------------")
+
+# to find the occurence of 10 most common words
+print("Occurrence of 10 most common words:")
+from collections import Counter
+txt=input("Enter text: ").lower().split()
+count=Counter(txt)
+for word,c in count.most_common(10):
+    print(word,"-",c)
+print("--------------------------------------------------------------------------")
+
+
+# create a deque and perform append , remove and reverse operations
+print("Operations on deque:")
+from collections import deque
+d=deque([12,23,34,45])
+print("Original deque: ",d)
+d.append(56)
+print("After appending: ",d)
+d.remove(34)
+print("After removing: ",d)
+d.reverse()
+print("Reverse: ",d)
+print("--------------------------------------------------------------------------")
+
+# creating a set of duplicates from list
+print("Set of duplicate elements of a list:")
+l=eval(input("Enter a list:"))
+l1=[x for x in l if l.count(x)>1]
+s=set(l1)
+print(s)
+print("--------------------------------------------------------------------------")
+
+
+# total revenue product-wise
+print("Product - wise total revenue: ")
+sales=[("Rice",1300),
+      ("Wheat",2600),
+      ("Ragi",900),
+      ("Wheat",1100),
+      ("Rice",2800)
+      ]
+d={}
+for i in sales:
+    if i[0] in d:
+        d[i[0]]+=i[1]
+    else:
+        d[i[0]]=i[1]
+print(d)
+print("--------------------------------------------------------------------------")
